@@ -5,14 +5,20 @@ from __future__ import annotations
 import uuid
 
 import chromadb
+from chromadb.api import ClientAPI
 from chromadb.api.models.Collection import Collection
 
 from mini_rag.config import Settings
 
+# One PersistentClient per DB path: creating clients reloads ONNX embedder metadata.
+_clients: dict[str, ClientAPI] = {}
+
 
 def get_collection(settings: Settings) -> Collection:
-    client = chromadb.PersistentClient(path=settings.chroma_path)
-    return client.get_or_create_collection(
+    path = settings.chroma_path
+    if path not in _clients:
+        _clients[path] = chromadb.PersistentClient(path=path)
+    return _clients[path].get_or_create_collection(
         name=settings.collection_name,
         metadata={"description": "mini_rag document chunks"},
     )

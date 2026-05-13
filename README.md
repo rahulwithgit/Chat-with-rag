@@ -105,6 +105,23 @@ Environment variables (or `.env` next to `requirements.txt`):
 | `CHUNK_SIZE` | `400` | Characters per chunk (rough length). |
 | `CHUNK_OVERLAP` | `80` | Overlap between consecutive chunks. |
 | `TOP_K` | `4` | Chunks to retrieve per question. |
+| `MAX_CONTEXT_CHARS` | `2000` | Max characters of retrieved context sent to Ollama (smaller = less prompt work). |
+| `OLLAMA_KEEP_ALIVE` | `30m` | How long Ollama keeps the model resident after a request (`30m`, `0`, etc.). Avoids cold reload between asks. |
+| `OLLAMA_NUM_PREDICT` | `256` | Max tokens to generate (lower = faster, shorter answers). |
+| `OLLAMA_NUM_CTX` | `2048` | Context window in **tokens**; raise if Ollama errors on long prompts. |
+| `OLLAMA_TEMPERATURE` | `0.2` | Lower = faster / more deterministic sampling on small models. |
+
+### Faster replies without changing the model
+
+Most latency is usually **Ollama generation** and **loading the model** if it was unloaded.
+
+1. **`OLLAMA_KEEP_ALIVE`** — Default `30m` keeps the same model in RAM between CLI runs so the next question does not pay a full load cost. Set to `0` only if you need to free RAM after each ask.
+2. **`OLLAMA_NUM_PREDICT`** — Default `256` caps output length; try `128` for snappier short answers.
+3. **`TOP_K`** or **`python -m mini_rag ask -k 2 ...`** — Fewer chunks → shorter prompt → less work per token.
+4. **`MAX_CONTEXT_CHARS`** — Default `2000` trims huge retrievals before the LLM sees them.
+5. **`OLLAMA_NUM_CTX`** — Only lower this (e.g. `1024`) if prompts are small and you want a bit less KV work; if you see context errors, raise it again.
+
+The code also **reuses** the HTTP client to Ollama and one **Chroma persistent client per DB path** inside a single Python process (e.g. a REPL or a small API you add later).
 
 ## How retrieval + generation work
 

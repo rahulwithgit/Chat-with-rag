@@ -31,15 +31,21 @@ def ingest_directory(dir_path: Path, patterns: tuple[str, ...], settings: Settin
 
 SYSTEM_PROMPT = """You are a careful assistant. Answer using ONLY the provided context.
 If the context does not contain enough information, say you do not know and suggest what might be missing.
-Keep answers concise."""
+Keep answers concise (at most a few sentences unless the question requires lists)."""
 
 
-def build_user_prompt(question: str, contexts: list[tuple[str, str | None]]) -> str:
+def build_user_prompt(
+    question: str,
+    contexts: list[tuple[str, str | None]],
+    max_context_chars: int,
+) -> str:
     blocks = []
     for i, (doc, source) in enumerate(contexts, start=1):
         src = f" (source: {source})" if source else ""
         blocks.append(f"[{i}]{src}\n{doc}")
     joined = "\n\n---\n\n".join(blocks)
+    if len(joined) > max_context_chars:
+        joined = joined[: max_context_chars - 40].rstrip() + "\n\n…(context truncated for speed)"
     return f"Context:\n\n{joined}\n\nQuestion: {question}"
 
 
@@ -52,5 +58,5 @@ def answer_question(question: str, settings: Settings | None = None) -> str:
             "No documents are indexed yet. Ingest `.txt` or `.md` files first "
             "(see README)."
         )
-    user = build_user_prompt(question, hits)
+    user = build_user_prompt(question, hits, settings.max_context_chars)
     return chat(settings, SYSTEM_PROMPT, user)
