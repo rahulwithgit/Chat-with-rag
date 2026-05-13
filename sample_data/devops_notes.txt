@@ -1,0 +1,145 @@
+DevOps Fundamentals
+
+DevOps is a set of practices that combines software development (Dev) and IT
+operations (Ops). The goal is to shorten the development lifecycle and deliver
+high-quality software continuously. Key principles include automation,
+continuous integration, continuous delivery, infrastructure as code, monitoring,
+and collaboration between teams.
+
+Continuous Integration (CI)
+
+CI is the practice of merging all developer working copies to a shared mainline
+several times a day. Every merge triggers an automated build and test pipeline.
+Popular CI tools include Jenkins, GitHub Actions, GitLab CI/CD, CircleCI, and
+Travis CI. A good CI pipeline runs unit tests, linting, static analysis, and
+security scans on every push. Fast feedback loops help catch bugs early before
+they reach production.
+
+Continuous Delivery and Continuous Deployment (CD)
+
+Continuous Delivery ensures that code changes are automatically built, tested,
+and prepared for release to production. Continuous Deployment goes one step
+further by automatically deploying every change that passes all pipeline stages
+to production without manual intervention. Blue-green deployments, canary
+releases, and rolling updates are common deployment strategies used to reduce
+risk during releases.
+
+Version Control with Git
+
+Git is the most widely used distributed version control system. Branching
+strategies like Git Flow, GitHub Flow, and trunk-based development help teams
+collaborate efficiently. Key commands include git clone, git branch, git merge,
+git rebase, git stash, and git cherry-pick. Pull requests (or merge requests)
+enable code review before changes are merged into the main branch.
+
+Containerization with Docker
+
+Docker packages applications and their dependencies into lightweight containers
+that run consistently across environments. A Dockerfile defines the image build
+steps. Key concepts include images, containers, volumes, networks, and
+registries. Docker Compose allows defining multi-container applications using a
+YAML file. Best practices include using small base images like Alpine, running
+as a non-root user, leveraging multi-stage builds, and keeping layers minimal.
+
+Container Orchestration with Kubernetes
+
+Kubernetes (K8s) automates deployment, scaling, and management of containerized
+applications. Core objects include Pods (smallest deployable unit), Deployments
+(manage replica sets), Services (expose pods to network traffic), ConfigMaps,
+Secrets, and Ingress controllers. Helm is a package manager for Kubernetes that
+uses charts to define, install, and upgrade applications. kubectl is the CLI
+tool used to interact with Kubernetes clusters. Common commands include kubectl
+get pods, kubectl describe deployment, kubectl apply -f, and kubectl logs.
+
+Infrastructure as Code (IaC)
+
+IaC manages and provisions infrastructure through machine-readable definition
+files rather than manual processes. Terraform by HashiCorp is the most popular
+multi-cloud IaC tool. It uses HCL (HashiCorp Configuration Language) and
+follows a plan-apply workflow. Ansible is an agentless configuration management
+tool that uses YAML playbooks to automate server setup and application
+deployment. Pulumi allows writing IaC in general-purpose programming languages
+like Python, TypeScript, and Go. CloudFormation is the AWS-native IaC service.
+
+Linux Essentials for DevOps
+
+Most servers run Linux. Essential skills include file system navigation (ls, cd,
+find, grep), process management (ps, top, htop, kill, systemctl), networking
+(curl, wget, netstat, ss, ip, nslookup, dig), file permissions (chmod, chown),
+package management (apt, yum, dnf), disk usage (df, du), and log inspection
+(journalctl, tail -f /var/log/syslog). Shell scripting with Bash automates
+repetitive tasks and is a core DevOps skill.
+
+Networking Basics
+
+Understanding networking is critical for DevOps. Key concepts include the
+OSI model (7 layers), TCP/IP, DNS resolution, HTTP/HTTPS, load balancing,
+reverse proxies, firewalls, and VPNs. CIDR notation is used for IP addressing.
+Common ports include 22 (SSH), 80 (HTTP), 443 (HTTPS), 3306 (MySQL), 5432
+(PostgreSQL), 6379 (Redis), and 27017 (MongoDB). Tools like nginx and HAProxy
+are used for load balancing and reverse proxying.
+
+Monitoring and Observability
+
+Monitoring tracks system health using metrics, logs, and traces. Prometheus
+collects time-series metrics and pairs with Grafana for visualization and
+dashboards. The ELK stack (Elasticsearch, Logstash, Kibana) or its lighter
+alternative EFK (Elasticsearch, Fluentd, Kibana) handles centralized logging.
+Jaeger and Zipkin provide distributed tracing. Alerting tools like PagerDuty
+and Opsgenie notify on-call engineers when thresholds are breached. The four
+golden signals of monitoring are latency, traffic, errors, and saturation.
+
+Cloud Providers
+
+The three major cloud providers are AWS (Amazon Web Services), Azure (Microsoft),
+and GCP (Google Cloud Platform). Core services to know include compute (EC2,
+Azure VMs, GCE), storage (S3, Azure Blob, GCS), databases (RDS, Cloud SQL),
+networking (VPC, subnets, security groups), and identity management (IAM).
+Serverless options like AWS Lambda, Azure Functions, and Google Cloud Functions
+allow running code without managing servers. Understanding pricing models,
+regions, and availability zones is important for cost optimization.
+
+CI/CD Pipeline Example
+
+A typical pipeline has these stages: (1) Source — code is pushed to a Git
+repository. (2) Build — the application is compiled or a Docker image is built.
+(3) Test — unit tests, integration tests, and end-to-end tests run. (4) Security
+scan — tools like Trivy, Snyk, or SonarQube check for vulnerabilities.
+(5) Artifact storage — built artifacts are pushed to a registry like Docker Hub,
+ECR, or Nexus. (6) Deploy to staging — the artifact is deployed to a staging
+environment for QA. (7) Deploy to production — after approval or automated
+checks, the artifact goes live.
+
+Security in DevOps (DevSecOps)
+
+DevSecOps integrates security into every stage of the DevOps pipeline. Practices
+include secret management (HashiCorp Vault, AWS Secrets Manager), image scanning,
+dependency vulnerability scanning (Dependabot, Snyk), network policies in
+Kubernetes, RBAC (Role-Based Access Control), TLS/SSL everywhere, and regular
+penetration testing. Shift-left security means catching vulnerabilities as early
+as possible in the development cycle.
+
+GitOps
+
+GitOps uses Git as the single source of truth for declarative infrastructure and
+applications. Tools like ArgoCD and Flux watch a Git repository and
+automatically reconcile the desired state defined in YAML manifests with the
+actual cluster state. Any change to infrastructure or application configuration
+is made via a pull request, providing an audit trail and enabling rollback by
+reverting a commit.
+
+Service Mesh
+
+A service mesh manages communication between microservices. Istio and Linkerd
+are popular choices. They provide traffic management, mutual TLS for encryption,
+observability (metrics, logs, traces between services), and fault injection for
+chaos testing. A sidecar proxy (like Envoy) runs alongside each service to
+intercept all network traffic transparently.
+
+Site Reliability Engineering (SRE)
+
+SRE applies software engineering principles to operations. Key concepts include
+SLIs (Service Level Indicators), SLOs (Service Level Objectives), SLAs (Service
+Level Agreements), error budgets, toil reduction, blameless postmortems, and
+incident management. The goal is to balance reliability with feature velocity.
+Google popularized SRE and published the SRE book as a free resource.
