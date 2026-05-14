@@ -1,0 +1,58 @@
+name: Auto Create Merge PR
+
+on:
+  push:
+    branches-ignore:
+      - dev
+
+jobs:
+  check-and-create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message
+        id: check_message
+        run: |
+          # Get the latest commit message
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          
+          # Check if commit message ends with "- merge"
+          if [[ "$COMMIT_MESSAGE" == *"- merge" ]]; then
+            echo "should_create_pr=true" >> $GITHUB_OUTPUT
+            echo "✅ Commit message ends with '- merge', will create PR"
+          else
+            echo "should_create_pr=false" >> $GITHUB_OUTPUT
+            echo "❌ Commit message does not end with '- merge', skipping PR creation"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_message.outputs.should_create_pr == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Merge from ${{ github.ref_name }} branch"
+          title: "Merge: ${{ github.ref_name }} → dev"
+          body: |
+            Automatic merge pull request created from branch `${{ github.ref_name }}`.
+            
+            **Latest commit message:**
+            ```
+            ${{ steps.check_message.outputs.commit_message }}
+            ```
+            
+            Please review and merge if everything looks good.
+          base: dev
+          head: ${{ github.ref_name }}
+          delete-branch: false
+          labels: |
+            automated
+            merge-request
