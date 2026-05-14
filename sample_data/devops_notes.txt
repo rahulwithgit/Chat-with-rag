@@ -143,4 +143,121 @@ SLIs (Service Level Indicators), SLOs (Service Level Objectives), SLAs (Service
 Level Agreements), error budgets, toil reduction, blameless postmortems, and
 incident management. The goal is to balance reliability with feature velocity.
 Google popularized SRE and published the SRE book as a free resource.
-that what you need.
+
+Software Development Life Cycle (SDLC)
+
+SDLC is the process used to design, develop, and test software. Common models
+include Waterfall (sequential phases), Agile (iterative sprints), Scrum (a
+framework within Agile using sprints, standups, and retrospectives), and Kanban
+(visual workflow boards). Agile is the most widely adopted methodology in modern
+software teams. Key ceremonies in Scrum include sprint planning, daily standup,
+sprint review, and sprint retrospective.
+
+APIs and Web Services
+
+An API (Application Programming Interface) allows different software systems to
+communicate. REST (Representational State Transfer) is the most common API style,
+using HTTP methods like GET, POST, PUT, PATCH, and DELETE. GraphQL is an
+alternative that lets clients request exactly the data they need. gRPC uses
+Protocol Buffers for fast binary communication between microservices. API
+gateways like Kong and AWS API Gateway handle authentication, rate limiting,
+and routing.
+
+Databases and Data Management
+
+Relational databases (PostgreSQL, MySQL, MariaDB) use SQL and are great for
+structured data with relationships. NoSQL databases include document stores
+(MongoDB, CouchDB), key-value stores (Redis, DynamoDB), column-family stores
+(Cassandra, HBase), and graph databases (Neo4j). Choosing between SQL and NoSQL
+depends on data structure, scale, consistency needs, and query patterns. Database
+migrations should be versioned and automated using tools like Flyway, Liquibase,
+or Alembic.
+
+Microservices Architecture
+
+Microservices break an application into small, independent services that
+communicate over APIs. Each service owns its data and can be deployed
+independently. Benefits include scalability, technology diversity, and fault
+isolation. Challenges include distributed tracing, data consistency, network
+latency, and operational complexity. The alternative is a monolithic architecture
+where the entire application runs as a single unit. Many teams start monolithic
+and migrate to microservices as they scale.
+
+Testing and Quality Assurance
+
+Testing ensures software works as expected. Unit tests verify individual
+functions or methods. Integration tests check how components work together.
+End-to-end (E2E) tests simulate real user flows. Popular testing frameworks
+include pytest (Python), JUnit (Java), Jest (JavaScript), and Go's built-in
+testing package. Test-Driven Development (TDD) writes tests before code.
+Code coverage tools measure how much code is exercised by tests, but high
+coverage alone does not guarantee quality.
+
+Logging Best Practices
+
+Effective logging helps debug issues faster. Use structured logging (JSON format)
+for machine-parseable logs. Include context like request IDs, user IDs, and
+timestamps. Use log levels appropriately: DEBUG for development details, INFO for
+normal operations, WARN for recoverable issues, ERROR for failures that need
+attention, and FATAL for crashes. Avoid logging sensitive data like passwords,
+tokens, or personal information. Centralize logs using tools like the ELK stack,
+Fluentd, Datadog, or Splunk.
+
+Configuration Management
+
+Configuration management ensures servers and environments are set up consistently.
+Tools include Ansible (agentless, YAML playbooks), Chef (Ruby-based, uses
+cookbooks), Puppet (declarative, uses manifests), and SaltStack. The principle
+of idempotency means running a configuration script multiple times produces the
+same result. Configuration drift happens when servers diverge from their defined
+state, which these tools help prevent.
+
+Caching Strategies
+
+Caching stores frequently accessed data closer to the consumer to reduce latency
+and load. Common layers include browser cache, CDN cache (CloudFront, Cloudflare),
+application cache (Redis, Memcached), and database query cache. Cache
+invalidation strategies include TTL (Time To Live), write-through, write-behind,
+and cache-aside patterns. The hardest problem in caching is knowing when to
+invalidate stale data.
+
+Message Queues and Event-Driven Architecture
+
+Message queues decouple producers from consumers. Popular tools include RabbitMQ,
+Apache Kafka, AWS SQS, and NATS. Kafka is widely used for event streaming and
+log aggregation. Event-driven architecture allows services to react to events
+asynchronously, improving scalability and resilience. Common patterns include
+publish-subscribe, event sourcing, and CQRS (Command Query Responsibility
+Segregation).
+
+General Knowledge and Soft Skills for DevOps
+
+DevOps is not just about tools; it is a culture of collaboration between
+development and operations teams. Communication, empathy, and shared
+responsibility are essential. Blameless postmortems after incidents focus on
+learning rather than finger-pointing. Documentation should be kept up to date
+and accessible. Automation should be applied wherever manual, repetitive tasks
+(called toil) exist. Continuous learning is important because the DevOps
+ecosystem evolves rapidly with new tools, practices, and cloud services.
+
+Common Interview Topics in DevOps
+
+Frequently asked DevOps interview topics include explaining the difference
+between CI and CD, describing how Docker differs from virtual machines,
+explaining Kubernetes pods and services, writing a basic Dockerfile or
+docker-compose file, describing a CI/CD pipeline you have built, explaining
+blue-green vs canary deployments, describing how you handle secrets in
+production, explaining the CAP theorem (Consistency, Availability, Partition
+tolerance), and discussing how to monitor and alert on system health. Being able
+to explain trade-offs and real-world experience matters more than memorizing
+definitions.
+
+Troubleshooting and Debugging
+
+When something breaks in production, a structured approach helps. Start by
+checking monitoring dashboards and recent deployments. Look at logs for errors
+or unusual patterns. Reproduce the issue in a staging environment if possible.
+Use tools like strace, tcpdump, netstat, and kubectl logs for deeper
+investigation. Common root causes include configuration errors, resource
+exhaustion (CPU, memory, disk), network issues, dependency failures, and
+race conditions. Always document the incident and resolution in a postmortem.
