@@ -14,7 +14,7 @@ No GPU is required; everything runs on CPU. The heaviest part is usually the **c
 | Path | Role |
 |------|------|
 | `mini_rag/config.py` | Environment-based settings (`OLLAMA_*`, chunk sizes, paths). |
-| `mini_rag/chunking.py` | Fixed-size overlapping text chunks. |
+| `mini_rag/chunking.py` | Semantic (paragraph-boundary) text chunking with fixed-size fallback. |
 | `mini_rag/vector_store.py` | ChromaDB collection helpers (add + similarity search). |
 | `mini_rag/ollama_llm.py` | POST `/api/chat` to Ollama. |
 | `mini_rag/pipeline.py` | `ingest_*` and `answer_question` orchestration. |
@@ -123,9 +123,11 @@ Most latency is usually **Ollama generation** and **loading the model** if it wa
 
 The code also **reuses** the HTTP client to Ollama and one **Chroma persistent client per DB path** inside a single Python process (e.g. a REPL or a small API you add later).
 
+6. **Query caching** — Repeated identical questions (case-insensitive, stripped) are served from an in-memory cache without hitting ChromaDB or Ollama. The cache is process-level and resets on restart.
+
 ## How retrieval + generation work
 
-1. **Chunking** — Each file is read as UTF-8 text, normalized lightly, and split with overlap so sentences at chunk boundaries are less likely to be cut in half without context.
+1. **Chunking** — Each file is read as UTF-8 text and split on paragraph boundaries (double newlines) so each coherent section stays together. Paragraphs longer than `CHUNK_SIZE` are sub-split with a fixed-size sliding window as a fallback.
 2. **Embedding + storage** — Chroma computes embeddings and stores `(id, document text, metadata)` where metadata includes the source file path.
 3. **Query** — Your question is embedded the same way; Chroma returns the nearest chunks by cosine distance in embedding space.
 4. **Generation** — Those chunks are concatenated into a **context** block. Ollama receives a short system instruction (“answer only from context”) and the user message with context + question.
