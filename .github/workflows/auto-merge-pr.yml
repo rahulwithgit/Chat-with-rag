@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      issues: write
 
     steps:
       - name: Checkout code
@@ -46,19 +47,20 @@ jobs:
             exit 0
           fi
 
+          # Create labels if they don't exist yet (safe to re-run)
+          gh label create "automated" --color "0e8a16" --description "Auto-generated PR" 2>/dev/null || true
+          gh label create "merge-request" --color "1d76db" --description "Branch merge PR" 2>/dev/null || true
+
           gh pr create \
             --base dev \
             --head "${{ github.ref_name }}" \
             --title "Merge: ${{ github.ref_name }} → dev" \
-            --body "$(cat <<'EOF'
-          Automatic merge pull request from branch \`${{ github.ref_name }}\`.
+            --body "Automatic merge pull request from branch \`${{ github.ref_name }}\`.
 
           **Latest commit message:**
           \`\`\`
           ${{ steps.check_message.outputs.commit_message }}
           \`\`\`
 
-          Please review and merge if everything looks good.
-          EOF
-          )" \
-            --label "automated,merge-request" || echo "PR creation failed (branch may already be up to date with dev)"
+          Please review and merge if everything looks good." \
+            --label "automated" --label "merge-request"
