@@ -36,23 +36,29 @@ jobs:
 
       - name: Create Pull Request
         if: steps.check_message.outputs.should_create_pr == 'true'
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "Merge from ${{ github.ref_name }} branch"
-          title: "Merge: ${{ github.ref_name }} → dev"
-          body: |
-            Automatic merge pull request created from branch `${{ github.ref_name }}`.
-            
-            **Latest commit message:**
-            ```
-            ${{ steps.check_message.outputs.commit_message }}
-            ```
-            
-            Please review and merge if everything looks good.
-          base: dev
-          head: ${{ github.ref_name }}
-          delete-branch: false
-          labels: |
-            automated
-            merge-request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Check if a PR already exists for this branch → dev
+          EXISTING=$(gh pr list --base dev --head "${{ github.ref_name }}" --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$EXISTING" ]; then
+            echo "PR #$EXISTING already exists, skipping."
+            exit 0
+          fi
+
+          gh pr create \
+            --base dev \
+            --head "${{ github.ref_name }}" \
+            --title "Merge: ${{ github.ref_name }} → dev" \
+            --body "$(cat <<'EOF'
+          Automatic merge pull request from branch \`${{ github.ref_name }}\`.
+
+          **Latest commit message:**
+          \`\`\`
+          ${{ steps.check_message.outputs.commit_message }}
+          \`\`\`
+
+          Please review and merge if everything looks good.
+          EOF
+          )" \
+            --label "automated,merge-request" || echo "PR creation failed (branch may already be up to date with dev)"
