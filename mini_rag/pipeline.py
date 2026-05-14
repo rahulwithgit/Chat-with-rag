@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Dict
 
 from mini_rag.chunking import chunk_text
 from mini_rag.config import Settings, get_settings
 from mini_rag.ollama_llm import chat
 from mini_rag.vector_store import add_documents, get_collection, query_similar
+
+# Process-level cache: maps normalised question -> answer string.
+# Resets on restart, which is intentional for a lightweight local tool.
+_answer_cache: Dict[str, str] = {}
 
 
 def ingest_file(path: Path, settings: Settings | None = None) -> int:
@@ -51,6 +56,11 @@ def build_user_prompt(
 
 def answer_question(question: str, settings: Settings | None = None) -> str:
     settings = settings or get_settings()
+
+    cache_key = question.strip().lower()
+    if cache_key in _answer_cache:
+        return _answer_cache[cache_key]
+
     collection = get_collection(settings)
     hits = query_similar(collection, question, settings.top_k)
     if not hits:
@@ -59,4 +69,6 @@ def answer_question(question: str, settings: Settings | None = None) -> str:
             "(see README)."
         )
     user = build_user_prompt(question, hits, settings.max_context_chars)
-    return chat(settings, SYSTEM_PROMPT, user)
+    answer = chat(settings, SYSTEM_PROMPT, user)
+    _answer_cache[cache_key] = answer
+    return answer
